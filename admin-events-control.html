@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Control Events</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .tab-btn {
+            padding: 0.5em 1em;
+            margin-right: 0.5em;
+            border: none;
+            background: #f5f7fa;
+            color: #1976d2;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 25px;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .tab-btn:hover {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+        .tab-btn.active {
+            background: #1976d2;
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(33, 150, 243, 0.12);
+            border: none;
+        }
+        .admin-dashboard-tab { margin-top: 1em; }
+        .event-row { display: flex; align-items: center; margin-bottom: 1em; padding: 0.5em 0; border-bottom: 1px solid #e0e0e0; }
+        .event-name { flex: 1; font-weight: 500; }
+        .enable-btn, .disable-btn {
+            padding: 0.4em 1.2em;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-right: 0.5em;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .enable-btn { background: #e0f7fa; color: #00796b; }
+        .enable-btn:hover { background: #b2ebf2; }
+        .disable-btn { background: #ffebee; color: #c62828; }
+        .disable-btn:hover { background: #ffcdd2; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard - Control Events</h1>
+        <nav>
+            <a href="admin-dashboard.html">Dashboard Home</a>
+            <a href="admin-events-control.html" class="tab-btn active">Control Events</a>
+            <a href="admin-events-add.html" class="tab-btn">Add Event/Program</a>
+        </nav>
+    </header>
+    <main>
+        <section class="dashboard">
+            <h2>All Events (Enable/Disable & Delete)</h2>
+            <div id="event-control-list"><p>Loading events...</p></div>
+            <button onclick="saveEventControl()" style="margin-top:1em;">Save Enabled Events</button>
+            <div id="eventControlMsg"></div>
+            <script>
+            async function loadEventControl() {
+                const container = document.getElementById('event-control-list');
+                try {
+                    const res = await fetch('http://localhost:5000/events');
+                    const events = await res.json();
+                    if (!Array.isArray(events) || events.length === 0) {
+                        container.innerHTML = '<p>No events found.</p>';
+                        return;
+                    }
+                    let html = '';
+                    for (const [i, ev] of events.entries()) {
+                        html += `<div class='event-row'><span class='event-name'>${ev.name}`;
+                        if (ev.date) html += ` (${ev.date})`;
+                        if (ev.location) html += ` - ${ev.location}`;
+                        html += `</span> `;
+                        if (ev.enabled !== false) {
+                            html += `<button class='disable-btn' onclick="setEventEnabled('${ev.name}', false)">Disable</button>`;
+                        } else {
+                            html += `<button class='enable-btn' onclick="setEventEnabled('${ev.name}', true)">Enable</button>`;
+                        }
+                        html += ` <button onclick=\"deleteEvent(${i})\" style=\"color:red;margin-left:1em;\">Delete</button>`;
+                        html += '</div>';
+                    }
+                    container.innerHTML = html;
+                } catch (e) {
+                    container.innerHTML = '<p style=\"color:red\">Failed to load events.</p>';
+                }
+            }
+            function saveEventControl() {
+                // No longer used with button UI
+                document.getElementById('eventControlMsg').innerHTML = '<span style="color:gray">Use Enable/Disable buttons to control events.</span>';
+            }
+
+            function setEventEnabled(eventName, enabled) {
+                const enabled_map = {};
+                enabled_map[eventName] = enabled;
+                fetch('http://localhost:5000/events/enabled', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ enabled_map })
+                }).then(res => res.json()).then(data => {
+                    if (data.status === 'success') {
+                        loadEventControl();
+                        document.getElementById('eventControlMsg').innerHTML = `<span style='color:green'>Event "${eventName}" ${enabled ? 'enabled' : 'disabled'}!</span>`;
+                    } else {
+                        document.getElementById('eventControlMsg').innerHTML = `<span style='color:red'>Failed to update event.</span>`;
+                    }
+                }).catch(() => {
+                    document.getElementById('eventControlMsg').innerHTML = `<span style='color:red'>Failed to update event.</span>`;
+                });
+            }
+            
+            async function deleteEvent(index) {
+                if (!confirm('Are you sure you want to delete this event?')) return;
+                try {
+                    const res = await fetch('http://localhost:5000/events', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ index })
+                    });
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        loadEventControl();
+                        document.getElementById('eventControlMsg').innerHTML = '<span style=\"color:green\">Event deleted!</span>';
+                    } else {
+                        document.getElementById('eventControlMsg').innerHTML = '<span style=\"color:red\">Failed to delete event.</span>';
+                    }
+                } catch (e) {
+                    document.getElementById('eventControlMsg').innerHTML = '<span style=\"color:red\">Failed to delete event.</span>';
+                }
+            }
+            loadEventControl();
+            </script>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2026 College Events - Admin Dashboard</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

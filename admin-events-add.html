@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Add Event/Program</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .tab-btn {
+            padding: 0.5em 1em;
+            margin-right: 0.5em;
+            border: none;
+            background: #f5f7fa;
+            color: #1976d2;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 25px;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .tab-btn:hover {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+        .tab-btn.active {
+            background: #1976d2;
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(33, 150, 243, 0.12);
+            border: none;
+        }
+        .admin-dashboard-tab { margin-top: 1em; }
+
+        .dashboard {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(33, 150, 243, 0.08), 0 1.5px 6px rgba(0,0,0,0.04);
+            padding: 2.5em 2em 2em 2em;
+            margin-top: 2em;
+        }
+        h2 {
+            color: #1976d2;
+            margin-bottom: 1.5em;
+            font-size: 2.1em;
+            letter-spacing: 1px;
+        }
+        h3 {
+            color: #1565c0;
+            margin-bottom: 0.7em;
+            font-size: 1.2em;
+        }
+        .event-input-box {
+            background: linear-gradient(120deg, #e3f2fd 60%, #f5f7fa 100%);
+            border-radius: 14px;
+            padding: 1.2em 1.5em 1.2em 1.5em;
+            margin-bottom: 1.2em;
+            box-shadow: 0 2px 12px rgba(33, 150, 243, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.7em;
+            border: 1.5px solid #bbdefb;
+            position: relative;
+            min-width: 340px;
+            max-width: 900px;
+            width: 50vw;
+        }
+        .event-input-box input[type="text"],
+        .event-input-box input[type="date"] {
+            padding: 0.7em 1em;
+            border-radius: 8px;
+            border: 1.5px solid #90caf9;
+            font-size: 1em;
+            margin-bottom: 0.3em;
+            background: #fff;
+            transition: border 0.2s;
+        }
+        .event-input-box input[type="text"]:focus,
+        .event-input-box input[type="date"]:focus {
+            border: 1.5px solid #1976d2;
+            outline: none;
+        }
+        .event-input-box select.event-month, .event-input-box input.event-year {
+            padding: 0.7em 1em;
+            border-radius: 8px;
+            border: 1.5px solid #90caf9;
+            font-size: 1em;
+            margin-bottom: 0.3em;
+            background: #f0f7ff;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        .event-input-box select.event-month:focus, .event-input-box input.event-year:focus {
+            border: 1.5px solid #1976d2;
+            outline: none;
+            background-color: #e3f2fd;
+        }
+        /* Remove default calendar icon in Chrome */
+        .event-input-box input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            display: none;
+        }
+        /* Remove default calendar icon in Firefox */
+        .event-input-box input[type="date"]::-moz-calendar-picker-indicator {
+            opacity: 0;
+            display: none;
+        }
+        /* Remove default calendar icon in Edge */
+        .event-input-box input[type="date"]::-ms-input-placeholder {
+            opacity: 0;
+            display: none;
+        }
+        #allover-event-inputs-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .event-box-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5em;
+            margin-top: 2em;
+            justify-content: center;
+            width: 100%;
+        }
+        .remove-event-box {
+            background: #ffcdd2;
+            color: #c62828;
+            border: none;
+            border-radius: 50%;
+            width: 2.3em;
+            height: 2.3em;
+            font-size: 1.3em;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+            transition: background 0.2s,color 0.2s;
+            z-index: 2;
+            margin-top: 0.5em;
+        }
+        .remove-event-box:hover {
+            background: #e57373;
+            color: #fff;
+        }
+        /* Add more margin to event box so button doesn't overlap visually */
+        #allover-event-inputs-container .event-input-box {
+            margin-top: 0;
+        }
+        #multiEventForm > div {
+            margin-bottom: 2.5em;
+        }
+        #multiEventForm button[type="button"] {
+            background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            padding: 0.7em 2.2em;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 0.7em;
+            margin-bottom: 0.7em;
+            box-shadow: 0 2px 12px rgba(33, 150, 243, 0.10);
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        #multiEventForm button[type="button"]:hover {
+            background: #1565c0;
+            box-shadow: 0 4px 18px rgba(33, 150, 243, 0.18);
+        }
+        .event-date-row {
+            display: flex;
+            gap: 0.7em;
+            align-items: center;
+            margin-bottom: 0.3em;
+        }
+        .event-date-row input, .event-date-row select {
+            padding: 0.7em 1em;
+            border-radius: 8px;
+            border: 1.5px solid #90caf9;
+            font-size: 1em;
+            background: #f0f7ff;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        .event-date-row input:focus, .event-date-row select:focus {
+            border: 1.5px solid #1976d2;
+            outline: none;
+            background-color: #e3f2fd;
+        }
+        @media (max-width: 900px) {
+            .event-input-box {
+                width: 95vw;
+                max-width: 99vw;
+            }
+        }
+        @media (max-width: 700px) {
+            .dashboard { padding: 1em 0.5em; }
+            .event-input-box { padding: 1em 0.7em; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard - Add Event/Program</h1>
+        <nav>
+            <a href="admin-dashboard.html">Dashboard Home</a>
+            <a href="admin-events-control.html" class="tab-btn">Control Events</a>
+            <a href="admin-events-add.html" class="tab-btn active">Add Event/Program</a>
+        </nav>
+    </header>
+    <main>
+        <section class="dashboard">
+            <h2>Add New Event/Program</h2>
+            <form id="multiEventForm">
+                <div style="margin-bottom:2em;">
+                    <h3>All Events (for Boys & Girls)</h3>
+                    <div id="allover-event-inputs-container">
+                        <div class="event-input-box">
+                            <input type="text" class="event-name" placeholder="Event Name">
+                            <input type="text" class="event-desc" placeholder="Event Description (optional)">
+                            <input type="text" class="event-location" placeholder="Location">
+                            <div class="event-date-row">
+                                <input type="number" class="event-day" placeholder="Day" min="1" max="31" required style="width:5em;">
+                                <select class="event-month" required>
+                                    <option value="">Month</option>
+                                    <option value="January">January</option>
+                                    <option value="February">February</option>
+                                    <option value="March">March</option>
+                                    <option value="April">April</option>
+                                    <option value="May">May</option>
+                                    <option value="June">June</option>
+                                    <option value="July">July</option>
+                                    <option value="August">August</option>
+                                    <option value="September">September</option>
+                                    <option value="October">October</option>
+                                    <option value="November">November</option>
+                                    <option value="December">December</option>
+                                </select>
+                                <input type="number" class="event-year" placeholder="Year" min="1900" max="2100" required style="width:6em;">
+                            </div>
+                            <div class="sports-sub-events" style="display:none;margin-top:1em;">
+                                <div style="font-weight:600;color:#1976d2;margin-bottom:0.5em;">Specify Sports for Boys and Girls:</div>
+                                <div style="display:flex;gap:2em;flex-wrap:wrap;">
+                                    <div style="flex:1;min-width:180px;">
+                                        <label style="font-weight:500;">Boys' Sports:</label>
+                                        <div class="boys-sports-list"></div>
+                                    </div>
+                                    <div style="flex:1;min-width:180px;">
+                                        <label style="font-weight:500;">Girls' Sports:</label>
+                                        <div class="girls-sports-list"></div>
+                                    </div>
+                                </div>
+                                <div style="display:flex;gap:2em;flex-wrap:wrap;margin-top:0.5em;">
+                                    <button type="button" class="add-boys-sport" style="background:#1976d2;color:#fff;border:none;border-radius:20px;padding:0.3em 1em;cursor:pointer;">+ Add Boys' Sport</button>
+                                    <button type="button" class="add-girls-sport" style="background:#1976d2;color:#fff;border:none;border-radius:20px;padding:0.3em 1em;cursor:pointer;">+ Add Girls' Sport</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="addAllOverEventBoxBtn" title="Add another event" style="font-size:1.5em;padding:0 0.5em;vertical-align:middle;">+</button>
+                </div>
+                <button type="button" onclick="addMultipleEvents()">Add Event(s)</button>
+            </form>
+            <div id="addEventMsg"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2026 College Events - Admin Dashboard</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+    // Show sub-event boxes for sports if event name is 'Sports' in any event box
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('event-name')) {
+            const box = e.target.closest('.event-input-box');
+            if (!box) return;
+            const subEvents = box.querySelector('.sports-sub-events');
+            if (!subEvents) return;
+            if (e.target.value.trim().toLowerCase() === 'sports') {
+                subEvents.style.display = '';
+            } else {
+                subEvents.style.display = 'none';
+            }
+        }
+    });
+
+    function createSportInput(className, placeholder) {
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.marginBottom = '0.5em';
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = className;
+        input.placeholder = placeholder;
+        input.style.width = '100%';
+        input.style.marginRight = '0.5em';
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.textContent = '–';
+        removeBtn.title = 'Remove';
+        removeBtn.style.background = '#ffcdd2';
+        removeBtn.style.color = '#c62828';
+        removeBtn.style.border = 'none';
+        removeBtn.style.borderRadius = '50%';
+        removeBtn.style.width = '2em';
+        removeBtn.style.height = '2em';
+        removeBtn.style.fontSize = '1.2em';
+        removeBtn.style.cursor = 'pointer';
+        removeBtn.style.marginLeft = '0.3em';
+        removeBtn.onclick = function() { wrapper.remove(); };
+        wrapper.appendChild(input);
+        wrapper.appendChild(removeBtn);
+        return wrapper;
+    }
+
+    function setupAddSportButtons(box) {
+        const boysBtn = box.querySelector('.add-boys-sport');
+        const girlsBtn = box.querySelector('.add-girls-sport');
+        if (boysBtn) {
+            boysBtn.onclick = function() {
+                box.querySelector('.boys-sports-list').appendChild(createSportInput('sports-boys', "Boys' Sport"));
+            };
+        }
+        if (girlsBtn) {
+            girlsBtn.onclick = function() {
+                box.querySelector('.girls-sports-list').appendChild(createSportInput('sports-girls', "Girls' Sport"));
+            };
+        }
+    }
+
+    function updateRemoveEventBoxButtons() {
+        const boxes = document.querySelectorAll('#allover-event-inputs-container .event-input-box');
+        boxes.forEach(box => {
+            let wrapper = box.parentElement;
+            if (!wrapper.classList.contains('event-box-row')) {
+                // Create a wrapper div for flex row
+                const row = document.createElement('div');
+                row.className = 'event-box-row';
+                box.parentElement.insertBefore(row, box);
+                row.appendChild(box);
+                wrapper = row;
+            }
+            let removeBtn = wrapper.querySelector('.remove-event-box');
+            if (!removeBtn) {
+                removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'remove-event-box';
+                removeBtn.title = 'Remove Event';
+                removeBtn.innerHTML = '&times;';
+                removeBtn.onclick = function() {
+                    if (document.querySelectorAll('#allover-event-inputs-container .event-input-box').length > 1) {
+                        wrapper.remove();
+                        updateRemoveEventBoxButtons();
+                    }
+                };
+                wrapper.insertBefore(removeBtn, box);
+            }
+            removeBtn.style.display = (boxes.length > 1) ? '' : 'none';
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        function addEventBox(containerId) {
+            const container = document.getElementById(containerId);
+            const box = document.createElement('div');
+            box.className = 'event-input-box';
+            box.innerHTML = `
+                <input type="text" class="event-name" placeholder="Event Name">
+                <input type="text" class="event-desc" placeholder="Event Description (optional)">
+                <input type="text" class="event-location" placeholder="Location">
+                <label style="font-weight:500;">Event Date:</label>
+                <div class="event-date-row">
+                    <input type="number" class="event-day" placeholder="Day" min="1" max="31" required style="width:5em;">
+                    <select class="event-month" required>
+                        <option value="">Month</option>
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                    </select>
+                    <input type="number" class="event-year" placeholder="Year" min="1900" max="2100" required style="width:6em;">
+                </div>
+                <div class="sports-sub-events" style="display:none;margin-top:1em;">
+                    <div style="font-weight:600;color:#1976d2;margin-bottom:0.5em;">Specify Sports for Boys and Girls:</div>
+                    <div style="display:flex;gap:2em;flex-wrap:wrap;">
+                        <div style="flex:1;min-width:180px;">
+                            <label style="font-weight:500;">Boys' Sports:</label>
+                            <div class="boys-sports-list"></div>
+                        </div>
+                        <div style="flex:1;min-width:180px;">
+                            <label style="font-weight:500;">Girls' Sports:</label>
+                            <div class="girls-sports-list"></div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:2em;flex-wrap:wrap;margin-top:0.5em;">
+                        <button type="button" class="add-boys-sport" style="background:#1976d2;color:#fff;border:none;border-radius:20px;padding:0.3em 1em;cursor:pointer;">+ Add Boys' Sport</button>
+                        <button type="button" class="add-girls-sport" style="background:#1976d2;color:#fff;border:none;border-radius:20px;padding:0.3em 1em;cursor:pointer;">+ Add Girls' Sport</button>
+                    </div>
+                </div>
+            `;
+            // Add one input by default for each
+            box.querySelector('.boys-sports-list').appendChild(createSportInput('sports-boys', "Boys' Sport"));
+            box.querySelector('.girls-sports-list').appendChild(createSportInput('sports-girls', "Girls' Sport"));
+            setupAddSportButtons(box);
+            container.appendChild(box);
+            updateRemoveEventBoxButtons();
+        }
+        const addAllOverBtn = document.getElementById('addAllOverEventBoxBtn');
+        if (addAllOverBtn) {
+            addAllOverBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                addEventBox('allover-event-inputs-container');
+            });
+        }
+        // For the initial event box on page load:
+        const firstBox = document.querySelector('#allover-event-inputs-container .event-input-box');
+        if (firstBox) {
+            if (!firstBox.querySelector('.boys-sports-list')) {
+                const boysList = document.createElement('div');
+                boysList.className = 'boys-sports-list';
+                boysList.appendChild(createSportInput('sports-boys', "Boys' Sport"));
+                const girlsList = document.createElement('div');
+                girlsList.className = 'girls-sports-list';
+                girlsList.appendChild(createSportInput('sports-girls', "Girls' Sport"));
+                firstBox.querySelector('.sports-sub-events > div > div:nth-child(1)').appendChild(boysList);
+                firstBox.querySelector('.sports-sub-events > div > div:nth-child(2)').appendChild(girlsList);
+            }
+            // Remove any duplicate add buttons if present
+            const oldBoysBtns = firstBox.querySelectorAll('.add-boys-sport');
+            const oldGirlsBtns = firstBox.querySelectorAll('.add-girls-sport');
+            oldBoysBtns.forEach((btn, idx) => { if(idx > 0) btn.remove(); });
+            oldGirlsBtns.forEach((btn, idx) => { if(idx > 0) btn.remove(); });
+            // Move the add buttons to the bottom row if not already
+            let addBtnsRow = firstBox.querySelector('.sports-sub-events > div > .add-btns-row');
+            if (!addBtnsRow) {
+                addBtnsRow = document.createElement('div');
+                addBtnsRow.className = 'add-btns-row';
+                addBtnsRow.style.display = 'flex';
+                addBtnsRow.style.gap = '2em';
+                addBtnsRow.style.flexWrap = 'wrap';
+                addBtnsRow.style.marginTop = '0.5em';
+                addBtnsRow.appendChild(firstBox.querySelector('.add-boys-sport'));
+                addBtnsRow.appendChild(firstBox.querySelector('.add-girls-sport'));
+                firstBox.querySelector('.sports-sub-events > div').appendChild(addBtnsRow);
+            }
+            setupAddSportButtons(firstBox);
+            updateRemoveEventBoxButtons();
+        }
+    });
+
+    async function addMultipleEvents() {
+        const alloverBoxes = document.querySelectorAll('#allover-event-inputs-container .event-input-box');
+        let added = 0, errors = [];
+        for (const box of alloverBoxes) {
+            const name = box.querySelector('.event-name').value.trim();
+            const desc = box.querySelector('.event-desc').value.trim();
+            const location = box.querySelector('.event-location').value.trim();
+            const day = box.querySelector('.event-day').value;
+            const month = box.querySelector('.event-month').value;
+            const year = box.querySelector('.event-year').value;
+            const date = (day && month && year) ? `${day} ${month} ${year}` : '';
+            const anyFilled = name || desc || location || date;
+            if (anyFilled && !name) {
+                errors.push('Please enter a name for the event.');
+                continue;
+            }
+            if (!anyFilled) continue;
+            let event = { name, desc, location, date, gender: 'all' };
+            if (name.toLowerCase() === 'sports') {
+                // Collect all boys/girls sports as arrays
+                event.boysSports = Array.from(box.querySelectorAll('.sports-boys')).map(i => i.value.trim()).filter(Boolean);
+                event.girlsSports = Array.from(box.querySelectorAll('.sports-girls')).map(i => i.value.trim()).filter(Boolean);
+            }
+            const ok = await sendEvent(event);
+            if (ok) added++;
+            else errors.push(`Failed to add event '${name}'.`);
+        }
+        const msgDiv = document.getElementById('addEventMsg');
+        if (added > 0) {
+            document.getElementById('allover-event-inputs-container').innerHTML = `<div class=\"event-input-box\"><input type=\"text\" class=\"event-name\" placeholder=\"Event Name\"><input type=\"text\" class=\"event-desc\" placeholder=\"Event Description (optional)\"><input type=\"text\" class=\"event-location\" placeholder=\"Location\"><label style=\"font-weight:500;\">Event Date:</label><div class=\"event-date-row\"><input type=\"number\" class=\"event-day\" placeholder=\"Day\" min=\"1\" max=\"31\" required style=\"width:5em;\"><select class=\"event-month\" required><option value=\"\">Month</option><option value=\"January\">January</option><option value=\"February\">February</option><option value=\"March\">March</option><option value=\"April\">April</option><option value=\"May\">May</option><option value=\"June\">June</option><option value=\"July\">July</option><option value=\"August\">August</option><option value=\"September\">September</option><option value=\"October\">October</option><option value=\"November\">November</option><option value=\"December\">December</option></select><input type=\"number\" class=\"event-year\" placeholder=\"Year\" min=\"1900\" max=\"2100\" required style=\"width:6em;\"></div><div class=\"sports-sub-events\" style=\"display:none;margin-top:1em;\"><div style=\"font-weight:600;color:#1976d2;margin-bottom:0.5em;\">Specify Sports for Boys and Girls:</div><div style=\"display:flex;gap:2em;flex-wrap:wrap;\"><div style=\"flex:1;min-width:180px;\"><label style=\"font-weight:500;\">Boys' Sports:</label><div class=\"boys-sports-list\"></div><button type=\"button\" class=\"add-boys-sport\" style=\"margin-top:0.3em;background:#1976d2;color:#fff;border:none;border-radius:20px;padding:0.3em 1em;cursor:pointer;\">+ Add Boys' Sport</button></div><div style=\"flex:1;min-width:180px;\"><label style=\"font-weight:500;\">Girls' Sports:</label><div class=\"girls-sports-list\"></div><button type=\"button\" class=\"add-girls-sport\" style=\"margin-top:0.3em;background:#1976d2;color:#fff;border:none;border-radius:20px;padding:0.3em 1em;cursor:pointer;\">+ Add Girls' Sport</button></div></div></div>`;
+            msgDiv.innerHTML = `<span style=\"color:green\">${added} event(s) added and enabled!</span>`;
+        } else {
+            msgDiv.innerHTML = `<span style=\"color:red\">${errors.join('<br>')}</span>`;
+        }
+    }
+
+    async function sendEvent(event) {
+        try {
+            const res = await fetch('http://localhost:5000/add_event', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(event)
+            });
+            const data = await res.json();
+            return data.status === 'success';
+        } catch (e) {
+            return false;
+        }
+    }
+    </script>
+
+</body>
+</html>

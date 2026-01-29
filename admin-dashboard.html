@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-dashboard-tabs {
+            margin-bottom: 1em;
+        }
+        .admin-dashboard-tab {
+            margin-top: 1em;
+        }
+        .tab-btn {
+            padding: 0.5em 1em;
+            margin-right: 0.5em;
+            border: none;
+            background: #c13737;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .tab-btn.active {
+            background: #0078d4;
+            color: #ffffff;
+        }
+        .admin-profile-pic {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #0078d4;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        .admin-profile-pic:hover, .admin-profile-pic.active {
+            box-shadow: 0 0 0 3px #0078d4aa;
+        }
+        .admin-profile-tooltip {
+            display: none;
+            position: absolute;
+            top: 70px;
+            right: 0;
+            left: auto;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+            padding: 1.2em 2.5em 1.2em 2.5em;
+            min-width: 340px;
+            min-height: 120px;
+            max-width: 420px;
+            z-index: 99999;
+            color: #222;
+            white-space: normal;
+            animation: dropdown-fade 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .admin-profile-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 12px;
+            border-style: solid;
+            border-color: transparent transparent #fff transparent;
+            filter: drop-shadow(0 -2px 2px #ccc);
+        }
+        .admin-profile-tooltip .profile-pic-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #0078d4;
+            margin-bottom: 1em;
+        }
+        .admin-profile-tooltip .profile-details {
+            width: 100%;
+            text-align: center;
+        }
+        .admin-profile-tooltip .profile-name {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 0.2em;
+        }
+        .admin-profile-tooltip .profile-email {
+            font-size: 1em;
+            color: #0078d4;
+            margin-bottom: 0.2em;
+        }
+        .admin-profile-tooltip .profile-desc {
+            font-size: 0.97em;
+            color: #555;
+            margin-bottom: 0.7em;
+        }
+        .admin-profile-tooltip .logout-btn {
+            display: block;
+            width: 120px;
+            margin: 0.5em auto 0 auto;
+            padding: 0.5em 0;
+            background: #0078d4;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            font-size: 1em;
+        }
+        header, nav {
+            overflow: visible !important;
+        }
+        #admin-profile-navbar {
+            position: relative;
+            z-index: 10010;
+            background: transparent;
+        }
+        .admin-profile-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1em;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 1.5em;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #0078d4;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2em 0 1em;
+        }
+        .clear-all-btn {
+            padding: 0.5em 1.5em;
+            background: #d9534f;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .clear-all-btn:hover {
+            background: #c9302c;
+        }
+        .registrations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+        }
+        .registration-card {
+            background: #fff;
+            padding: 1.2em;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .registration-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5em;
+        }
+        .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+        .registration-number {
+            font-size: 1.1em;
+            color: #fff;
+            background: linear-gradient(135deg, #6a5af9 0%, #7f53ac 100%);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(122, 86, 255, 0.08);
+            margin-right: 0.5em;
+            font-family: inherit;
+        }
+        .delete-btn {
+            background: #d9534f;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 0.3em 0.6em;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .delete-btn:hover {
+            background: #c9302c;
+        }
+        .profile-arrow {
+            margin-left: 0.3em;
+            font-size: 1.2em;
+            color: #0078d4;
+            transition: transform 0.2s;
+        }
+        .profile-arrow.open {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <nav style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="flex:1; display: flex; justify-content: center; align-items: center; gap: 1.5em;">
+                <a href="admin-events-list.html">Enabled Events & Registrations</a>
+                <a href="admin-events-control.html">Admin: Control Events</a>
+                <a href="admin-events-add.html">Admin: Add Event/Program</a>
+            </div>
+            <div id="admin-profile-navbar" style="display: flex; align-items: center; height: 100%;"></div>
+        </nav>
+    </header>
+    <main>
+        <section class="dashboard">
+            <h2>Event Registration Overview</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card" id="stat-total">
+                    <h3>Total Registrations</h3>
+                    <div class="stat-number" id="stat-total-number">0</div>
+                </div>
+                <div class="stat-card" id="stat-girls">
+                    <h3>No. of Girls</h3>
+                    <div class="stat-number" id="stat-girls-number">0</div>
+                </div>
+                <div class="stat-card" id="stat-boys">
+                    <h3>No. of Boys</h3>
+                    <div class="stat-number" id="stat-boys-number">0</div>
+                </div>
+            </div>
+            <div id="admin-dashboard-event-control" class="admin-dashboard-tab">
+                <!-- Event Control section removed as per request -->
+            </div>
+            <div class="section-header">
+                <h2>Detailed Registrations</h2>
+                <button class="clear-all-btn" onclick="clearAllRegistrations()" title="Clear All Registrations">
+                    Clear All
+                </button>
+            </div>
+            <div id="detailed-registrations"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2026 College Events - Admin Dashboard</p>
+    </footer>
+    <script src="script.js"></script>
+    <script>
+    function renderAdminProfile() {
+        const profile = JSON.parse(localStorage.getItem('adminProfile') || '{}');
+        const navbar = document.getElementById('admin-profile-navbar');
+        if (!profile || !profile.name) {
+            navbar.innerHTML = '';
+            return;
+        }
+        navbar.innerHTML = `
+            <div class="admin-profile-container">
+                <img src="${profile.image && profile.image !== '' ? profile.image : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(profile.name || 'Admin') + '&background=0078d4&color=fff&size=128'}" alt="Profile" class="admin-profile-pic" id="adminProfilePic" title="Profile">
+            </div>
+            <div class="admin-profile-sidebar" id="adminProfileSidebar">
+                <div class="sidebar-header">
+                    <img src="${profile.image && profile.image !== '' ? profile.image : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(profile.name || 'Admin') + '&background=0078d4&color=fff&size=128'}" alt="Profile" class="sidebar-pic-large">
+                    <div class="sidebar-details">
+                        <div class="sidebar-name">${profile.name}</div>
+                        <div class="sidebar-email">${profile.email || ''}</div>
+                        <div class="sidebar-role">${profile.role || 'Admin'}</div>
+                        <div class="sidebar-desc">${profile.description || ''}</div>
+                        <div class="sidebar-extra">
+                            <div><b>Contact:</b> ${profile.email || 'N/A'}</div>
+                            <div><b>Username:</b> ${profile.username || 'N/A'}</div>
+                            <div><b>Joined:</b> ${profile.joined || '2024'}</div>
+                        </div>
+                        <button class="logout-btn" onclick="logoutAdmin()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        const pic = document.getElementById('adminProfilePic');
+        const sidebar = document.getElementById('adminProfileSidebar');
+        const main = document.querySelector('main');
+        let open = false;
+        function closeSidebar(e) {
+            if (!sidebar.contains(e.target) && e.target !== pic) {
+                sidebar.classList.remove('open');
+                main.classList.remove('sidebar-open');
+                open = false;
+                document.removeEventListener('mousedown', closeSidebar);
+            }
+        }
+        function toggleSidebar() {
+            open = !open;
+            if (open) {
+                sidebar.classList.add('open');
+                main.classList.add('sidebar-open');
+                setTimeout(() => {
+                    document.addEventListener('mousedown', closeSidebar);
+                }, 0);
+            } else {
+                sidebar.classList.remove('open');
+                main.classList.remove('sidebar-open');
+                document.removeEventListener('mousedown', closeSidebar);
+            }
+        }
+        sidebar.classList.remove('open');
+        main.classList.remove('sidebar-open');
+        pic.addEventListener('click', toggleSidebar);
+    }
+
+    function logoutAdmin() {
+        localStorage.removeItem('adminProfile');
+        window.location.href = 'admin.html';
+    }
+
+    async function loadDashboard() {
+        renderAdminProfile();
+        try {
+            const res = await fetch('http://localhost:5000/registrations');
+            const registrations = await res.json();
+            // Stats
+            document.getElementById('stat-total-number').textContent = registrations.length;
+            const girls = registrations.filter(r => r.gender && r.gender.toLowerCase() === 'female').length;
+            const boys = registrations.filter(r => r.gender && r.gender.toLowerCase() === 'male').length;
+            document.getElementById('stat-girls-number').textContent = girls;
+            document.getElementById('stat-boys-number').textContent = boys;
+            showDetailedRegistrations(registrations);
+        } catch (e) {
+            document.getElementById('detailed-registrations').innerHTML = '<p style="color:red">Failed to load registrations.</p>';
+        }
+    }
+    function showDetailedRegistrations(registrations) {
+        let html = '<div class="registrations-list">';
+        if (!registrations || registrations.length === 0) {
+            html += '<p>No registrations yet.</p>';
+        } else {
+            registrations.forEach((reg, index) => {
+                html += `
+                    <div class="registration-card" data-index="${index}">
+                        <div class="registration-header">
+                            <h3>${reg.name}</h3>
+                            <div class="card-actions">
+                                <span class="registration-number">#${index + 1}</span>
+                                <button class="delete-btn" title="Cancel Registration" onclick="deleteRegistration(${index})">&#10006;</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        html += '</div>';
+        document.getElementById('detailed-registrations').innerHTML = html;
+    }
+
+    async function deleteRegistration(index) {
+        if (!confirm('Are you sure you want to cancel this registration?')) return;
+        try {
+            const res = await fetch('http://localhost:5000/registrations', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ index })
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                loadDashboard();
+            } else {
+                alert('Failed to cancel registration.');
+            }
+        } catch (e) {
+            alert('Failed to cancel registration.');
+        }
+    }
+    document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>
