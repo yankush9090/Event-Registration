@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Login</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="register.html">Student Registration</a>
+            <a href="upcoming events.html">Events</a>
+            <a href="admin.html">Admin Login</a>
+        </nav>
+    </header>
+    <main>
+        <section class="admin-login-section">
+            <div class="admin-profile-card">
+                <div class="admin-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=1976d2&color=fff&size=128" alt="Admin Avatar">
+                </div>
+            </div>
+            <div class="admin-login-card">
+                <h3>Admin Login</h3>
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit">Login</button>
+                </form>
+                <div id="adminMessage"></div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2026 College Events</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
