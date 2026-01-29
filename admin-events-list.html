@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin: Enabled Events</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Enabled Events - Admin</h1>
+        <nav>
+            <a href="admin-dashboard.html">Admin Dashboard</a>
+            <a href="admin.html">Logout</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Enabled Events</h2>
+        <div id="events-list" style="margin-top:2rem;"></div>
+    </main>
+    <footer>
+        <p>&copy; 2026 College Events - Admin</p>
+    </footer>
+    <script>
+    async function loadEnabledEvents() {
+        try {
+            const res = await fetch('http://localhost:5000/events');
+            const events = await res.json();
+            const enabled = events.filter(ev => ev.enabled);
+            let html = '';
+            if (enabled.length === 0) {
+                html = '<p style="color:#888;text-align:center;font-size:1.1rem;">No events are currently enabled.</p>';
+            } else {
+                html = '<div class="admin-events-list">';
+                enabled.forEach(ev => {
+                    html += `<a class="admin-event-card" href="event-registrations.html?event=${encodeURIComponent(ev.name)}">
+                        <div class="event-card-content">
+                            <h3 style="margin-bottom:0.5rem;">${ev.name}</h3>
+                            <div style="color:#555;font-size:0.98rem;">${ev.date ? ev.date : ''} ${ev.location ? ' | ' + ev.location : ''}</div>
+                        </div>
+                    </a>`;
+                });
+                html += '</div>';
+            }
+            document.getElementById('events-list').innerHTML = html;
+        } catch (e) {
+            document.getElementById('events-list').innerHTML = '<p style="color:red">Failed to load events.</p>';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', loadEnabledEvents);
+    </script>
+    <style>
+    .admin-events-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+    .admin-event-card {
+        display: block;
+        background: #eaf1fb;
+        color: #063568;
+        border-radius: 16px;
+        padding: 1.5rem 2.2rem;
+        min-width: 220px;
+        max-width: 320px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.15rem;
+        box-shadow: 0 4px 24px rgba(44,62,80,0.08);
+        transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+        margin-bottom: 0.5rem;
+    }
+    .admin-event-card:hover {
+        background: #0078d4;
+        color: #fff;
+        box-shadow: 0 8px 32px rgba(0,120,212,0.13);
+        transform: translateY(-4px) scale(1.03);
+    }
+    .admin-event-card h3 {
+        margin: 0 0 0.2rem 0;
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+    .event-card-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    </style>
+</body>
+</html>
